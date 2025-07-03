@@ -10,8 +10,50 @@
 </head>
 
 <body>
-    
+
     <h1>Super Quini Simulator</h1>
+    <div id="container">
+        <section id="carton">
+            <label for="input">
+                <h3>
+                    Ingresá tu apuesta ! entre 0 y 99:
+                </h3>
+            </label>
+            <form id="form">
+                <div class="inputs">
+                    <input type="number" id="input1" min="0" max="99" required>
+                    <input type="number" id="input2" min="0" max="99" required>
+                    <input type="number" id="input3" min="0" max="99" required>
+                    <input type="number" id="input4" min="0" max="99" required>
+                    <input type="number" id="input5" min="0" max="99" required>
+                    <input type="number" id="input6" min="0" max="99" required>
+                </div>
+                <button type="submit">Enviar</button>
+            </form>
+        </section>
+
+        <section id="carton">
+            <h2>Resultados</h2>
+            <h3>Carton Sorteado </h3>
+            <div id="result">
+            </div>
+            <div id="error" class="error"></div>
+            <button type="reset">Reintentar</button>
+        </section>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span id="cerrar" class="close">&times;</span>
+            <div id="aciertos"></div>
+        </div>
+    </div>
+    <section id="historial">
+
+        <h2>Historial de apuestas</h2>
+        <div id="lasApuestas"></div>
+
+    </section>
+
 
 </body>
 
