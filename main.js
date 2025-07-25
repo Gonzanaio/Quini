@@ -18,73 +18,112 @@ function verificarApuesta(carton, respuesta) {
     }
   }
   if (aciertos === 6) {
-    const modal = document.getElementById("modal");
-    modal.style.display = "flex";
-    const modalContent = document.getElementById("aciertos");
-    modalContent.style.display = "block";
-    modalElement.innerHTML = `<h2>🎉 ¡Felicidades!</h2> <p>Has acertado todos los números 🎯</p>`;
+    swal("🎉 ¡Felicidades!", "Has acertado todos los números 🎯", "success");
   } else if (aciertos === 0) {
-    const modal = document.getElementById("modal");
-    modal.style.display = "flex";
-    const aciertosElement = document.getElementById("aciertos");
-    aciertosElement.style.display = "block";
-    aciertosElement.innerHTML = `<h2>¡Ups, Lo siento !</h2> <p>No has acertado ningún número.😢</p>`;
+    swal("¡Ups, Lo siento!", "No has acertado ningún número.😢", "error");
   } else {
-    const modal = document.getElementById("modal");
-    modal.style.display = "flex";
-    const aciertosElement = document.getElementById("aciertos");
-    aciertosElement.style.display = "block";
-    aciertosElement.innerHTML = `<h2>🎉 ¡Felicidades!</h2> <p>Has acertado ${aciertos} número${
-      aciertos !== 1 ? "s" : ""
-    }.🎯</p>`;
+    swal(
+      "¡Buen intento!",
+      `Has acertado ${aciertos} número${aciertos !== 1 ? "s" : ""}.🎯`,
+      "success"
+    );
   }
-  guardarApuesta(respuesta);
+
+  guardarApuesta(carton, respuesta);
 }
 
-function guardarApuesta(valores) {
+async function mostrarSorteo(carton, valores) {
+  console.log("Sorteo en vivo:");
+  const resultado = document.getElementById("result");
+  resultado.innerHTML = "";
+  const h2 = document.createElement("h2");
+  h2.textContent = "Resultados";
+  resultado.appendChild(h2);
+  const p = document.createElement("p");
+  resultado.appendChild(p);
+
+  for (let i = 0; i < carton.length; i++) {
+    const numero = carton[i];
+    await new Promise((res) => setTimeout(res, 1000));
+
+    const span = document.createElement("span");
+    span.textContent = numero;
+
+    span.className = valores.includes(numero) ? "acierto" : "error";
+
+    p.appendChild(span);
+    if (i < carton.length - 1) {
+      p.appendChild(document.createTextNode(" - "));
+    }
+    console.log("Número sorteado:", numero);
+  }
+  console.log("Sorteo finalizado.");
+  verificarApuesta(carton, valores);
+  mostrarHistorial(); // Actualiza el historial después de mostrar el sorteo
+}
+
+function guardarApuesta(carton, valores) {
   const apuestasGuardadas = JSON.parse(localStorage.getItem("apuestas")) || [];
+  console.log("Apuestas guardadas:", apuestasGuardadas);
 
   apuestasGuardadas.push({
     numeros: valores,
+    aciertos: valores.filter((num) => carton.includes(num)).length,
     fecha: new Date().toLocaleString(),
   });
-
   localStorage.setItem("apuestas", JSON.stringify(apuestasGuardadas));
 }
-
-//------------------- Cierra modasl -------------------
-window.addEventListener("click", (e) => {
-  const modalGanador = document.getElementById("modal");
-  if (e.target === modal) {
-    modalGanador.style.display = "none";
-  }
-});
 
 //----------------- Carga de apuestas guardadas -----------------
 
 function mostrarHistorial() {
   const contenedor = document.getElementById("lasApuestas");
   const apuestas = JSON.parse(localStorage.getItem("apuestas")) || [];
+  const boton = document.getElementById("btn-historial");
 
-  if (apuestas.length === 0) {
-    contenedor.innerHTML = "<p>No hay apuestas registradas.</p>";
-    return;
+  const botonOculto =
+    contenedor.style.display === "none" || contenedor.style.display === "";
+
+  if (botonOculto) {
+    contenedor.style.display = "block";
+    boton.textContent = "Ocultar historial";
+
+    if (apuestas.length === 0) {
+      contenedor.innerHTML = "<p>No hay apuestas registradas.</p>";
+      return;
+    }
+
+    // Armamos una lista
+    let cantApuestas = `<h3>Apuestas realizadas ${apuestas.length}</h3>`;
+    let html = "<ul>";
+    apuestas.forEach((apuesta, historial) => {
+      html += `<li>
+      <div class="jugada">
+        <strong>Jugada : ${historial + 1}</strong> 
+        <p>${apuesta.numeros.join(" - ")}</p>
+        <p>${apuesta.aciertos} aciertos</p> 
+        <em>(${apuesta.fecha})</em>
+      </div>
+      </li>`;
+    });
+    html += "</ul>";
+    contenedor.innerHTML = cantApuestas + html;
+  } else {
+    boton.textContent = "Mostrar historial";
+    contenedor.style.display = "none";
   }
-
-  // Armamos una lista
-  let html = "<ul>";
-  apuestas.forEach((apuesta, index) => {
-    html += `<li>
-      <strong>Jugada ${index + 1}</strong>: 
-      [${apuesta.numeros.join(" - ")}] 
-      <em>(${apuesta.fecha})</em>
-    </li>`;
-  });
-  html += "</ul>";
-
-  contenedor.innerHTML = html;
+  console.log("Apuestas guardadas:", apuestas);
 }
+
+// Limpiar LocalStorage
+function limpiarHistorial() {
+  localStorage.removeItem("apuestas");
+  alert("Historial de apuestas reiniciado.");
+  mostrarHistorial(); // Actualiza el historial después de limpiar
+}
+
 //----------------- Generación del cartón y verificación de la apuesta -----------------
+
 const form = document.getElementById("form");
 form.addEventListener("submit", (e) => {
   e.preventDefault(); // Evita el envío del formulario
@@ -99,50 +138,10 @@ form.addEventListener("submit", (e) => {
       console.error(`Input con id input${i} no encontrado.`);
     }
   }
+  // Validación de los números ingresados
   const carton = quini();
-  console.log("Cartón generado:", carton);
 
-  verificarApuesta(carton, valores);
-  console.log("Tu apuesta:", valores);
-
-  const resultado = document.getElementById("result");
-
-  let cartonHTML = "<p>";
-  for (let i = 0; i < carton.length; i++) {
-    const numero = carton[i];
-    if (valores.includes(numero)) {
-      cartonHTML += `<span class="acierto">${numero}</span>`;
-    } else {
-      cartonHTML += `<spanc class="error">${numero}</span>`;
-    }
-    if (i < carton.length - 1) cartonHTML += " - ";
-  }
-  cartonHTML += "</p>";
-  resultado.innerHTML = cartonHTML;
-  mostrarHistorial(); // Muestra el historial de apuestas
-  document.querySelector('button[type="reset"]').style.display = "inline-block";
-});
-
-//----------------- Botón de reinicio -----------------
-const resetButton = document.querySelector('button[type="reset"]');
-
-resetButton.addEventListener("click", (e) => {
-  e.preventDefault();
-  const modal = document.getElementById("modal");
-  modal.style.display = "none";
-  const result = document.getElementById("result");
-  result.innerHTML = "";
-  const aciertosElement = document.getElementById("aciertos");
-  aciertosElement.style.display = "none";
-  for (let i = 1; i <= 6; i++) {
-    const input = document.getElementById(`input${i}`);
-    if (input) {
-      input.value = ""; // Limpia los valores de los inputs
-    } else {
-      console.error(`Input con id input${i} no encontrado.`);
-    }
-  }
-  resetButton.style.display = "none";
+  mostrarSorteo(carton, valores); // Muestra el sorteo en vivo
 });
 
 // ------- cambio de colores de fondo al pasar el mouse -------
@@ -150,7 +149,7 @@ resetButton.addEventListener("click", (e) => {
 const div = document.getElementById("container");
 let intervalId;
 
-function getRandomColor() {
+function colorRandom() {
   const r = Math.floor(Math.random() * 175) + 100;
   const g = Math.floor(Math.random() * 175) + 100;
   const b = Math.floor(Math.random() * 175) + 100;
@@ -159,10 +158,64 @@ function getRandomColor() {
 
 div.addEventListener("mouseenter", () => {
   intervalId = setInterval(() => {
-    div.style.backgroundColor = getRandomColor();
+    div.style.backgroundColor = colorRandom();
   }, 400);
 });
 
 div.addEventListener("mouseleave", () => {
   clearInterval(intervalId);
 });
+
+// ------- Mostrar formulario al hacer clic en el botón "Comenzar" -------
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btnComenzar = document.getElementById("btn-comenzar");
+  const formElement = document.getElementById("form");
+  let formVisible = false;
+  btnComenzar.addEventListener("click", () => {
+    btnComenzar.style.display = "none"; // Oculta el botón al hacer clic
+    if (!formVisible) {
+      const formDiv = document.createElement("div");
+      formDiv.className = "inputs";
+
+      for (let i = 1; i <= 6; i++) {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.id = `input${i}`;
+        input.min = "0";
+        input.max = "99";
+        input.required = true;
+        formDiv.appendChild(input);
+      }
+      formElement.appendChild(formDiv);
+      const btnSubmit = document.createElement("button");
+      btnSubmit.type = "submit";
+      btnSubmit.textContent = "Enviar Apuesta";
+      formElement.appendChild(btnSubmit);
+      formVisible = true;
+      btnSubmit.addEventListener("click", () => {
+        if (formVisible) {
+          btnSubmit.textContent = "Reitentar Apuesta";
+        }
+      });
+    }
+  });
+});
+
+// ------- prueba api ---------
+
+async function datoCurioso() {
+  const numeroSuerte = parseInt(Math.floor(Math.random() * 99) + 1);
+  try {
+    const respuesta = await fetch(`http://numbersapi.com/${numeroSuerte}`);
+    const data = await respuesta.text();
+    document.getElementById(
+      "dato"
+    ).innerHTML = `<p class="dato-curioso">${data}</p>`;
+  } catch (error) {
+    console.error("Error al obtener el dato curioso:", error);
+    document.getElementById("dato").innerText =
+      "No se pudo obtener el dato curioso.";
+  }
+}
+datoCurioso(); // Llama a la función para mostrar el dato curioso al cargar la página

@@ -11,50 +11,44 @@
 
 <body>
 
-    <h1>Super Quini Simulator</h1>
-    <div id="container">
-        <section id="carton">
-            <label for="input">
+    <header>
+        <h1>Super Quini Simulator</h1>
+        <p>¡Probá tu suerte!</p>
+    </header>
+
+    <section class="main-section">
+        <section class="dato-box">
+            <h2>¿Sabías que?</h2>
+            <div id="dato"></div>
+        </section>
+
+        <div id="container">
+            <section id="carton">
                 <h3>
                     Ingresá tu apuesta ! entre 0 y 99:
                 </h3>
-            </label>
-            <form id="form">
-                <div class="inputs">
-                    <input type="number" id="input1" min="0" max="99" required>
-                    <input type="number" id="input2" min="0" max="99" required>
-                    <input type="number" id="input3" min="0" max="99" required>
-                    <input type="number" id="input4" min="0" max="99" required>
-                    <input type="number" id="input5" min="0" max="99" required>
-                    <input type="number" id="input6" min="0" max="99" required>
-                </div>
-                <button type="submit">Enviar</button>
-            </form>
-        </section>
-
-        <section id="carton">
-            <h2>Resultados</h2>
-            <h3>Carton Sorteado </h3>
+                <button id="btn-comenzar"> Comenzar ! </button>
+                <form id="form">
+                </form>
+            </section>
             <div id="result">
+                <div id="error" class="error"></div>
             </div>
-            <div id="error" class="error"></div>
-            <button type="reset">Reintentar</button>
-        </section>
-    </div>
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span id="cerrar" class="close">&times;</span>
-            <div id="aciertos"></div>
         </div>
-    </div>
-    <section id="historial">
 
-        <h2>Historial de apuestas</h2>
-        <div id="lasApuestas"></div>
+        <section id="historial">
 
+            <h2>Historial de apuestas</h2>
+            <button id="btn-historial" onclick="mostrarHistorial()">Mostrar historial</button>
+            <div id="lasApuestas"></div>
+            <button onclick="limpiarHistorial()">Reiniciar Historial</button>
+        </section>
     </section>
 
 
+    </section>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </body>
 
 
