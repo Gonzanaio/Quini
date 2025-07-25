@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function datoCurioso() {
   const numeroSuerte = parseInt(Math.floor(Math.random() * 99) + 1);
   try {
-    const respuesta = await fetch(`http://numbersapi.com/${numeroSuerte}`);
+    const respuesta = await fetch(`https://numbersapi.com/${numeroSuerte}`);
     const data = await respuesta.text();
     document.getElementById(
       "dato"
