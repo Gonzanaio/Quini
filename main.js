@@ -33,7 +33,6 @@ function verificarApuesta(carton, respuesta) {
 }
 
 async function mostrarSorteo(carton, valores) {
-  console.log("Sorteo en vivo:");
   const resultado = document.getElementById("result");
   resultado.innerHTML = "";
   const h2 = document.createElement("h2");
@@ -55,16 +54,14 @@ async function mostrarSorteo(carton, valores) {
     if (i < carton.length - 1) {
       p.appendChild(document.createTextNode(" - "));
     }
-    console.log("Número sorteado:", numero);
+    "Número sorteado:", numero;
   }
-  console.log("Sorteo finalizado.");
   verificarApuesta(carton, valores);
   mostrarHistorial(); // Actualiza el historial después de mostrar el sorteo
 }
 
 function guardarApuesta(carton, valores) {
   const apuestasGuardadas = JSON.parse(localStorage.getItem("apuestas")) || [];
-  console.log("Apuestas guardadas:", apuestasGuardadas);
 
   apuestasGuardadas.push({
     numeros: valores,
@@ -112,7 +109,6 @@ function mostrarHistorial() {
     boton.textContent = "Mostrar historial";
     contenedor.style.display = "none";
   }
-  console.log("Apuestas guardadas:", apuestas);
 }
 
 // Limpiar LocalStorage
